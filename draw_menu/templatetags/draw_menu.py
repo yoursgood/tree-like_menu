@@ -6,8 +6,8 @@ register = template.Library()
 
 
 @register.inclusion_tag('templatetags/menu.html', takes_context=True)
-def draw_menu(context, slug):  # takes slug as argument
-    """Draws menu"""
+def draw_menu(context, slug):
+    """Отрисовка главного меню"""
     try:
         menu = Menu.objects.prefetch_related('items__items__items__items').get(slug=slug)
         return {'menu': menu, 'context': context}
