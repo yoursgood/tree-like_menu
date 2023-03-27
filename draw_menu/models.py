@@ -3,10 +3,7 @@ from django.urls import reverse
 
 
 class BaseAbstractModel(models.Model):
-    """
-    Base abstract model.
-    Provides visibility settings, ordering, and created/updated field.
-    """
+    """Базовая модель."""
     is_visible = models.BooleanField(default=True, verbose_name='Visibility')
     order = models.IntegerField(default=10, verbose_name='Order')
     date_created = models.DateTimeField(auto_now_add=True)
@@ -17,12 +14,14 @@ class BaseAbstractModel(models.Model):
 
 
 class Menu(BaseAbstractModel):
-    """
-    Model for menu item. Has title and slug fields.
-    Slug is designed to use in templatetag 'draw menu' for displaying menu
+    """Модель меню. Имеет title и поле slug.
+    Slug используется для отрисовки 
+    при вызове templatetag 'draw menu' для отображения меню.
     """
     title = models.CharField(max_length=20, verbose_name='Menu title')
-    slug = models.SlugField(max_length=255, verbose_name='Slug', null=True,
+    slug = models.SlugField(max_length=255, 
+                            verbose_name='Slug', 
+                            null=True,
                             help_text='Use it in templatetag for displaying menu')
     named_url = models.CharField(max_length=255, verbose_name='Named URL', blank=True,
                                  help_text='Named url from your urls.py file')
@@ -43,15 +42,17 @@ class Menu(BaseAbstractModel):
 
 
 class MenuItem(BaseAbstractModel):
+    """Модель элемента меню. Имеет поля menu, parent, title и url.
+    Поле Menu используется только для элементов первого уровня.
+    Любой элемент меню можно сделать родительским.
+    Если вы будете использовать поле "named url", метод get_url сначала будет 
+    использовать его для генерации ссылки и только затем поле "url".
     """
-    Model for menu item. Has menu, parent, title, url fields.
-    Menu field is only requied for top level items.
-    You can provide any item in parent field and it will become relative for this item.
-    If you'll use 'named url' field, get_url method will use it firstly to generate url.
-    And only then 'url' field.
-    """
-    menu = models.ForeignKey(Menu, related_name='items',
-                             verbose_name='menu', blank=True, null=True,
+    menu = models.ForeignKey(Menu, 
+                             related_name='items',
+                             verbose_name='menu', 
+                             blank=True, 
+                             null=True,
                              on_delete=models.CASCADE)
     parent = models.ForeignKey('self', blank=True, null=True,
                                related_name='items',
